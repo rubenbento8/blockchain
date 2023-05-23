@@ -1,0 +1,12 @@
+module Issuer where
+
+data Issuer = Issuer
+  { name : Text
+  , id : Text
+  , party : Party
+  }
+  deriving (Eq, Show)
+
+createIssuer : Text -> Text -> Party -> Issuer
+createIssuer name id party =
+  Issuer { name = name, id = id, party = party }

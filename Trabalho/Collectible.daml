@@ -1,0 +1,40 @@
+module Collectible where
+
+template Collectible
+  with
+    owner : Party
+    creator : Party
+    name : Text
+    serialNumber : Int
+  where
+    signatory owner
+    observer creator
+
+    choice Transfer : ContractId Collectible
+      with
+        newOwner : Party
+      controller owner
+      do
+        assertMsg "Only the owner can transfer the collectible" (creator == owner)
+        create this with owner = newOwner
+
+template CollectibleSale
+  with
+    collectible : ContractId Collectible
+    seller : Party
+    buyer : Party
+    value : Decimal
+    public: Party
+
+  where
+    signatory seller, buyer
+    observer public
+
+    nonconsuming choice ConfirmSale : ContractId CollectibleSale
+      controller buyer
+      do
+        exercise collectible Transfer with newOwner = buyer
+        create this
+
+
+

@@ -1,0 +1,33 @@
+module TestCollectibleSale where
+
+import Daml.Script
+import Issuer
+import Collectible
+
+-- user_setup_begin
+
+token_test_2 : Script (ContractId Collectible)
+token_test_2 = do
+  alice <- allocateParty "Alice"
+  bob <- allocateParty "Bob"
+  observers <- allocateParty "Public"
+
+  aliceTv <- submit alice do
+    createCmd Collectible with 
+        owner = alice
+        creator = alice
+        name = "TV"
+        serialNumber = 19527
+
+  aliceTVSale <- submit alice do
+    createCmd CollectibleSale with
+      collectible = aliceTv
+      seller = alice
+      buyer = bob
+      value = 10.0
+      public = observers
+
+  submit bob do
+    exerciseCmd aliceTVSale ConfirmSale
+
+-- user_setup_end
